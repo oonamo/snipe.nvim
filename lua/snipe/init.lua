@@ -108,8 +108,18 @@ H.setup_config = function(config)
     ["sort"] = { config.sort, "string", true },
   }
 
+  -- TODO: Remove when neovim version 0.11 releases
+  -- ref: https://github.com/neovim/neovim/pull/30855#issue-2597159657
+  local function _validate(field, validator)
+    if vim.fn.has("nvim-0.11") == 1 then
+      vim.validate(field, unpack(validator))
+    else
+      vim.validate({ [field] = validator })
+    end
+  end
+
   for field, validator in pairs(validation_set) do
-    vim.validate(field, unpack(validator))
+    _validate(field, validator)
   end
 
   -- Make sure they are not using preselect_current and preselect
